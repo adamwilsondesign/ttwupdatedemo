@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Fonts (TTW's existing typefaces) ───────────────────────── */
+@font-face {
+  font-family: "volksans";
+  src: url("/fonts/volksans-Normal.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "volksans";
+  src: url("/fonts/volksans-Regular.otf") format("opentype");
+  font-weight: 500 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "decimaMono";
+  src: url("/fonts/DecimaMono.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* ───────────────────────── Brand tokens ─────────────────────────
+   One core colour — VOLT (electric blue) — plus ink + paper neutrals.
+   Every gradient is built from the Volt ramp, so the system stays mono-hue. */
+@theme {
+  --font-sans: "volksans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "decimaMono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-volt-50: #eef1ff;
+  --color-volt-100: #dce2ff;
+  --color-volt-200: #b7c3ff;
+  --color-volt-300: #8a9bff;
+  --color-volt-400: #5c70ff;
+  --color-volt: #2e46ff;
+  --color-volt-500: #2e46ff;
+  --color-volt-600: #1c30e6;
+  --color-volt-700: #1422b0;
+  --color-volt-800: #0c1678;
+  --color-volt-900: #070c45;
+  --color-ink: #04050d;
+  --color-night: #05060f;
+  --color-paper: #f3f4f9;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ───────────────────────── Tone engine ─────────────────────────
+   Registered custom properties can be transitioned, so flipping
+   html[data-tone] crossfades every colour on the page at once. */
+@property --bg { syntax: "<color>"; inherits: true; initial-value: #05060f; }
+@property --fg { syntax: "<color>"; inherits: true; initial-value: #f3f4f9; }
+@property --muted { syntax: "<color>"; inherits: true; initial-value: #9aa0c3; }
+@property --line { syntax: "<color>"; inherits: true; initial-value: #3d4475; }
+@property --surface { syntax: "<color>"; inherits: true; initial-value: #0c0f24; }
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #8a9bff; }
+
+:root {
+  --bg: #05060f;
+  --fg: #f3f4f9;
+  --muted: #9aa0c3;
+  --line: #3d4475;
+  --surface: #0c0f24;
+  --accent: #8a9bff;
+  --tone-ms: 900ms;
+  transition:
+    --bg var(--tone-ms) var(--ease-out-expo),
+    --fg var(--tone-ms) var(--ease-out-expo),
+    --muted var(--tone-ms) var(--ease-out-expo),
+    --line var(--tone-ms) var(--ease-out-expo),
+    --surface var(--tone-ms) var(--ease-out-expo),
+    --accent var(--tone-ms) var(--ease-out-expo);
+  color-scheme: dark;
+}
+:root[data-tone="light"] {
+  --bg: #f3f4f9;
+  --fg: #04050d;
+  --muted: #555b7d;
+  --line: #a9aecb;
+  --surface: #ffffff;
+  --accent: #2e46ff;
+  color-scheme: light;
+}
+
+html { scroll-behavior: smooth; overflow-x: clip; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+::selection { background: var(--color-volt); color: #fff; }
+
+/* ───────────────────────── Type scale ───────────────────────── */
+.display {
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  /* volksans ships two weights — a hairline stroke in the text colour
+     pushes display sizes into a true heavy weight */
+  -webkit-text-stroke: 0.018em currentColor;
+  paint-order: stroke fill;
+}
+.h-section {
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  -webkit-text-stroke: 0.012em currentColor;
+  font-size: clamp(2.6rem, 6.2vw, 6rem);
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.lede { font-size: clamp(1.05rem, 1.4vw, 1.3rem); line-height: 1.45; color: var(--muted); }
+
+.text-volt-grad {
+  background: linear-gradient(100deg, #2e46ff 0%, #5c70ff 35%, #b7c3ff 75%, #eef1ff 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: 0;
+}
+:root[data-tone="light"] .text-volt-grad {
+  background-image: linear-gradient(100deg, #070c45 0%, #1422b0 35%, #2e46ff 70%, #5c70ff 100%);
+}
+
+/* ───────────────────────── Gradients ───────────────────────── */
+.grad-volt { background: linear-gradient(120deg, #070c45 0%, #1c30e6 45%, #5c70ff 72%, #b7c3ff 100%); }
+.grad-plasma {
+  background:
+    radial-gradient(60% 80% at 15% 20%, rgba(92, 112, 255, 0.9) 0%, transparent 60%),
+    radial-gradient(50% 70% at 85% 30%, rgba(183, 195, 255, 0.55) 0%, transparent 60%),
+    radial-gradient(70% 90% at 60% 100%, rgba(28, 48, 230, 1) 0%, transparent 70%),
+    linear-gradient(160deg, #070c45 0%, #0c1678 50%, #2e46ff 100%);
+}
+.grad-horizon {
+  background:
+    radial-gradient(80% 55% at 50% 100%, rgba(46, 70, 255, 0.55) 0%, rgba(28, 48, 230, 0.18) 40%, transparent 70%),
+    radial-gradient(40% 30% at 64% 85%, rgba(183, 195, 255, 0.25) 0%, transparent 70%);
+}
+.grain::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.12; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ───────────────────────── Linework ─────────────────────────
+   Heavier 1.5px rules in high-contrast ink/paper, with registration
+   crosshairs wherever frame lines intersect. */
+.rule { border-color: var(--line); }
+.rule-strong { border-color: var(--fg); }
+.frame { position: relative; border-inline: 1.5px solid var(--line); }
+.cross { position: absolute; width: 17px; height: 17px; pointer-events: none; color: var(--fg); z-index: 5; }
+.cross::before, .cross::after { content: ""; position: absolute; background: currentColor; }
+.cross::before { left: 8px; top: 0; width: 1.5px; height: 17px; }
+.cross::after { top: 8px; left: 0; height: 1.5px; width: 17px; }
+.grid-bg {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 45%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* ───────────────────────── Logos ─────────────────────────
+   Partner logos arrive in every format; we flatten them to one colour
+   that follows the section tone. */
+.logo-img { filter: brightness(0) invert(1); transition: filter var(--tone-ms) var(--ease-out-expo), opacity 300ms; }
+:root[data-tone="light"] .logo-img { filter: brightness(0); }
+.logo-on-volt .logo-img, .logo-on-volt.logo-img { filter: brightness(0) invert(1) !important; }
+
+/* ───────────────────────── Buttons ───────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+  height: 3.25rem; padding: 0 1.5rem; border-radius: 999px;
+  font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+  transition: transform 300ms var(--ease-out-expo), background-color 300ms, color 300ms, box-shadow 300ms, border-color 300ms;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-volt {
+  color: #fff;
+  background: linear-gradient(120deg, #1c30e6, #2e46ff 45%, #5c70ff);
+  box-shadow: 0 0 0 1.5px rgba(183, 195, 255, 0.35) inset, 0 10px 40px -10px rgba(46, 70, 255, 0.85);
+}
+.btn-volt:hover { box-shadow: 0 0 0 1.5px rgba(238, 241, 255, 0.7) inset, 0 14px 50px -8px rgba(46, 70, 255, 1); transform: translateY(-2px); }
+.btn-ghost { border: 1.5px solid var(--fg); color: var(--fg); }
+.btn-ghost:hover { background: var(--fg); color: var(--bg); }
+.link-u { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: background-size 400ms var(--ease-out-expo); }
+.link-u:hover { background-size: 100% 1.5px; }
+
+/* ───────────────────────── Motion ───────────────────────── */
+@keyframes marquee-l { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+@keyframes marquee-r { from { transform: translate3d(-50%, 0, 0); } to { transform: translate3d(0, 0, 0); } }
+@keyframes scroll-up { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -50%, 0); } }
+@keyframes scroll-down { from { transform: translate3d(0, -50%, 0); } to { transform: translate3d(0, 0, 0); } }
+@keyframes twinkle { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+@keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes beacon { 0%, 70%, 100% { opacity: 0.25; } 80% { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+.marquee { display: flex; width: max-content; animation: marquee-l var(--dur, 60s) linear infinite; }
+.marquee.rev { animation-name: marquee-r; }
+.marquee-wrap:hover .marquee, .marquee-wrap:hover [data-anim] { animation-play-state: paused; }
+.mask-x { mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
+.mask-y { mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent); }
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo); }
+.reveal.in { opacity: 1; transform: none; }
+
+.win-lit { animation: twinkle var(--tw, 6s) ease-in-out infinite; animation-delay: var(--td, 0s); }
+.beacon { animation: beacon 2.4s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee, .win-lit, .beacon, [data-anim] { animation: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  :root { --tone-ms: 1ms; }
+}
