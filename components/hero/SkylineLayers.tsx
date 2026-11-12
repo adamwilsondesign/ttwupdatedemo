@@ -14,24 +14,26 @@ export const TRACK_R = 4020;
 
 export type SignData = { name: string; src?: string };
 
-/* Rooftop billboard: legs + lit panel + partner logo flattened to white. */
-function Sign({ cx, roof, w = 104, h = 36, data, hot = false }: { cx: number; roof: number; w?: number; h?: number; data: SignData; hot?: boolean }) {
-  const x = cx - w / 2;
-  const y = roof - 12 - h;
+/* Rooftop billboard, mounted on a flat roof: a plinth across the roof, two
+   legs at the building edges, and a lit panel the width of the building.
+   (bx, bw, top) are the host building's front-face x, width and roof line. */
+function Sign({ bx, bw, top, h = 34, data, hot = false }: { bx: number; bw: number; top: number; h?: number; data: SignData; hot?: boolean }) {
+  const x = bx + 3;
+  const w = bw - 6;
+  const y = top - 12 - h;
   const stroke = hot ? "#d4ff3a" : "#b7c3ff";
   return (
     <g>
-      <line x1={cx - w * 0.3} y1={roof} x2={cx - w * 0.3} y2={y + h} stroke={stroke} strokeWidth="1.5" />
-      <line x1={cx + w * 0.3} y1={roof} x2={cx + w * 0.3} y2={y + h} stroke={stroke} strokeWidth="1.5" />
-      <line x1={cx - w * 0.3} y1={roof - 6} x2={cx + w * 0.3} y2={roof - 6} stroke={stroke} strokeWidth="1" />
-      <rect x={x - 4} y={y - 4} width={w + 8} height={h + 8} rx={7} fill={hot ? "#d4ff3a" : "#5c70ff"} opacity={hot ? 0.16 : 0.14} />
+      <rect x={bx} y={top - 3} width={bw} height={3} fill="#070c45" stroke={stroke} strokeWidth="1" />
+      <path d={`M${bx + 7},${top - 3} V${y + h} M${bx + bw - 7},${top - 3} V${y + h}`} stroke={stroke} strokeWidth="2" />
+      <path d={`M${bx + 7},${top - 3} L${bx + 15},${y + h} M${bx + bw - 7},${top - 3} L${bx + bw - 15},${y + h}`} stroke={stroke} strokeWidth="1" />
+      <rect x={x - 4} y={y - 4} width={w + 8} height={h + 8} rx={7} fill={hot ? "#d4ff3a" : "#5c70ff"} opacity={hot ? 0.18 : 0.14} />
       <rect x={x} y={y} width={w} height={h} rx={4} fill="#05060f" stroke={stroke} strokeWidth="1.75" />
       {data.src ? (
-        <image href={data.src} x={x + 10} y={y + 7} width={w - 20} height={h - 14} preserveAspectRatio="xMidYMid meet" filter="url(#toWhite)" />
+        <image href={data.src} x={x + 8} y={y + 7} width={w - 16} height={h - 14} preserveAspectRatio="xMidYMid meet" filter="url(#toWhite)" />
       ) : (
-        <text x={cx} y={y + h / 2 + 5} textAnchor="middle" fontSize="13" fontFamily="volksans" fill="#eef1ff" letterSpacing="-0.4">{data.name}</text>
+        <text x={x + w / 2} y={y + h / 2 + 4.5} textAnchor="middle" fontSize="12" fontFamily="volksans" fill="#eef1ff" letterSpacing="-0.4">{data.name}</text>
       )}
-      {[0.2, 0.5, 0.8].map((t) => <circle key={t} cx={x + w * t} cy={y + h + 2.5} r={1.4} fill={stroke} />)}
     </g>
   );
 }
@@ -134,9 +136,9 @@ export function Defs() {
 export const FarLayer = memo(function FarLayer() {
   const r = rng(7);
   const items: React.ReactNode[] = [];
-  let x = -950;
+  let x = -1300;
   let i = 0;
-  while (x < 2550) {
+  while (x < 2900) {
     const w = 26 + Math.floor(r() * 44);
     // taller cluster around downtown core (x≈900–1500)
     const core = Math.exp(-Math.pow((x - 1150) / 520, 2));
@@ -170,20 +172,19 @@ export const MidLayer = memo(function MidLayer({ presenting, others }: { present
     let x = from;
     let k = base;
     while (x < to) {
-      const w = 40 + Math.floor(r() * 30);
-      const top = 190 + Math.floor(r() * 130);
+      const carries = k % 3 === 0 && others.length > 0;
+      const w = carries ? 92 + Math.floor(r() * 22) : 40 + Math.floor(r() * 30);
+      const top = carries ? 210 + Math.floor(r() * 90) : 190 + Math.floor(r() * 130);
       filler(x, w, top, k);
-      if (k % 3 === 0 && others.length) {
-        signs.push(<Sign key={`s${k}`} cx={x + w / 2} roof={top - 4} data={others[si++ % others.length]} />);
-      }
+      if (carries) signs.push(<Sign key={`s${k}`} bx={x} bw={w} top={top} data={others[si++ % others.length]} />);
       x += w + 14 + Math.floor(r() * 26);
       k++;
     }
   };
-  strip(-1520, 170, 0);
-  strip(1500, 3120, 1000);
+  strip(-1900, 170, 0);
+  strip(1500, 3500, 1000);
   // in-frame fillers between landmarks
-  [[365, 34, 280], [580, 40, 255], [1188, 22, 250]].forEach(([x, w, t], k) => filler(x, w, t, 200 + k));
+  [[365, 34, 280], [580, 40, 255]].forEach(([x, w, t], k) => filler(x, w, t, 200 + k));
 
   return (
     <g strokeLinejoin="round">
@@ -237,16 +238,11 @@ export const MidLayer = memo(function MidLayer({ presenting, others }: { present
         ))}
       </g>
 
-      {/* Fairmont Royal York — château roof */}
-      <g>
-        <Box x={884} y={300} w={84} h={GROUND - 300} d={7} front="url(#midFill)" side="url(#midSide)" stroke={S} win="url(#winMid)" lit={litWindows(r, 884, 300, 84, 130, 6)} />
-        <path d="M880,300 L896,268 H956 L972,300 Z" fill="#0c1678" stroke={S} strokeWidth="1.5" />
-        <path d="M908,268 L926,246 L944,268" fill="#1422b0" stroke={S} strokeWidth="1.5" />
-        {[896, 916, 936, 956].map((dx) => <rect key={dx} x={dx - 4} y={280} width={8} height={10} fill="#05060f" stroke={S} strokeWidth="1" />)}
-      </g>
+      {/* Union tower — flat roof, carries a presenting billboard */}
+      <Box x={878} y={236} w={94} h={GROUND - 236} d={7} front="url(#midFill)" side="url(#midSide)" stroke={S} win="url(#winMid)" lit={litWindows(r, 878, 236, 94, 194, 7)} />
 
-      {/* CN Tower — the hero, brightest strokes + glow */}
-      <g>
+      {/* CN Tower — the hero, scaled up from its base, brightest strokes + glow */}
+      <g transform={`translate(1010 ${GROUND}) scale(1.24) translate(-1010 ${-GROUND})`}>
         <circle cx={1010} cy={140} r={70} fill="url(#podGlow)" opacity="0.55" />
         {/* legs */}
         <path d={`M984,${GROUND} L1003,160 H1017 L1036,${GROUND} Z`} fill="url(#hero)" stroke="#dce2ff" strokeWidth="1.75" />
@@ -267,10 +263,10 @@ export const MidLayer = memo(function MidLayer({ presenting, others }: { present
 
       {/* TD Centre — two black towers with grid */}
       <g>
-        <Box x={1082} y={150} w={52} h={GROUND - 150} front="#05060f" side="#04050d" stroke={S} />
-        <rect x={1084} y={152} width={48} height={GROUND - 154} fill="url(#grid)" />
-        <Box x={1146} y={208} w={40} h={GROUND - 208} front="#05060f" side="#04050d" stroke={S} />
-        <rect x={1148} y={210} width={36} height={GROUND - 212} fill="url(#grid)" />
+        <Box x={1060} y={150} w={84} h={GROUND - 150} front="#05060f" side="#04050d" stroke={S} />
+        <rect x={1062} y={152} width={80} height={GROUND - 154} fill="url(#grid)" />
+        <Box x={1152} y={208} w={42} h={GROUND - 208} front="#05060f" side="#04050d" stroke={S} />
+        <rect x={1154} y={210} width={38} height={GROUND - 212} fill="url(#grid)" />
       </g>
 
       {/* First Canadian Place — tallest office, pinstriped */}
@@ -291,23 +287,23 @@ export const MidLayer = memo(function MidLayer({ presenting, others }: { present
       </g>
 
       {/* Commerce Court West */}
-      <Box x={1346} y={182} w={42} h={GROUND - 182} front="url(#midFill)" side="url(#midSide)" stroke={S} win="url(#winMid)" lit={litWindows(r, 1346, 182, 42, 248, 6)} />
+      <Box x={1340} y={182} w={76} h={GROUND - 182} front="url(#midFill)" side="url(#midSide)" stroke={S} win="url(#winMid)" lit={litWindows(r, 1340, 182, 76, 248, 7)} />
 
       {/* The One — supertall with exoskeleton */}
       <g>
-        <Box x={1412} y={64} w={40} h={GROUND - 64} d={7} front="url(#midFill)" side="url(#midSide)" stroke="#b7c3ff" />
+        <Box x={1428} y={64} w={40} h={GROUND - 64} d={7} front="url(#midFill)" side="url(#midSide)" stroke="#b7c3ff" />
         {Array.from({ length: 12 }).map((_, k) => {
           const y0 = 70 + k * 30;
-          return <path key={k} d={`M1412,${y0} L1452,${y0 + 30} M1452,${y0} L1412,${y0 + 30}`} stroke="#8a9bff" strokeOpacity="0.45" strokeWidth="1" />;
+          return <path key={k} d={`M1428,${y0} L1468,${y0 + 30} M1468,${y0} L1428,${y0 + 30}`} stroke="#8a9bff" strokeOpacity="0.45" strokeWidth="1" />;
         })}
-        <path d="M1412,64 h40" stroke="#eef1ff" strokeWidth="2" />
+        <path d="M1428,64 h40" stroke="#eef1ff" strokeWidth="2" />
       </g>
 
       {/* rooftop billboards */}
       {signs}
-      {presenting[0] && <Sign cx={926} roof={243} w={96} data={presenting[0]} hot />}
-      {presenting[1] && <Sign cx={1108} roof={140} data={presenting[1]} hot />}
-      {presenting[2] && <Sign cx={1367} roof={176} w={96} data={presenting[2]} hot />}
+      {presenting[0] && <Sign bx={878} bw={94} top={236} data={presenting[0]} hot />}
+      {presenting[1] && <Sign bx={1060} bw={84} top={150} data={presenting[1]} hot />}
+      {presenting[2] && <Sign bx={1340} bw={76} top={182} data={presenting[2]} hot />}
     </g>
   );
 });
@@ -317,9 +313,9 @@ export const NearLayer = memo(function NearLayer() {
   const r = rng(99);
   const S = "#b7c3ff";
   const items: React.ReactNode[] = [];
-  let x = -3150;
+  let x = -3700;
   let i = 0;
-  while (x < 4750) {
+  while (x < 5300) {
     const w = 46 + Math.floor(r() * 46);
     const h = 36 + Math.floor(r() * 44);
     const y = GROUND - h;
@@ -351,7 +347,7 @@ export const NearLayer = memo(function NearLayer() {
     x += w + 8 + Math.floor(r() * 10);
   }
   // catenary poles every 240 units
-  for (let px = -3100; px < 4700; px += 240) {
+  for (let px = -3700; px < 5300; px += 240) {
     items.push(
       <g key={`pole${px}`}>
         <line x1={px} y1={GROUND + 6} x2={px} y2={340} stroke="#dce2ff" strokeWidth="2.5" />

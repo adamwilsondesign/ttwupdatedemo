@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 export function Faq({ items }: { items: { q: string; a: string }[] }) {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <ul>
       {items.map((it, i) => (

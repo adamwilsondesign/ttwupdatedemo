@@ -92,7 +92,7 @@ export function SocialWall({ tone = "dark" }: { tone?: "dark" | "light" }) {
         </defs>
       </svg>
       <SectionHead
-        index="05"
+        index="08"
         eyebrow="Community"
         title="TTW 2026, in your words."
         action={

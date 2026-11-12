@@ -82,7 +82,8 @@ export function PerksClient({ perks, logos }: { perks: Perk[]; logos: LogoMap })
         <div className="pointer-events-none absolute inset-0 grad-plasma opacity-90" />
         <div className="pointer-events-none absolute inset-0 grain" />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_55%,#05060f)]" />
-        <div className="frame relative mx-auto max-w-[1440px] px-5 pt-36 pb-16 md:px-10 md:pt-44 md:pb-20">
+        <div className="frame relative mx-auto max-w-[1440px]">
+          <div className="px-5 pt-36 pb-16 md:px-10 md:pt-44 md:pb-20">
           <span className="cross -left-[9px] top-[88px]" />
           <span className="cross -right-[9px] top-[88px]" />
           <p className="eyebrow mb-6 text-volt-100">Partner Perks · TTW 2027</p>
@@ -112,14 +113,16 @@ export function PerksClient({ perks, logos }: { perks: Perk[]; logos: LogoMap })
               </>
             )}
           </div>
+          </div>
 
-          <dl className="mt-16 grid grid-cols-3 border-y-[1.5px] border-white/40 text-white">
+          {/* stats row — its bottom edge is the carousel's top rule */}
+          <dl className="grid grid-cols-3 border-t-[1.5px] border-white/40 text-white">
             {[
               [String(perks.length), "Active offers"],
               [`${money(totalValue)}+`, "Combined value"],
               [String(partnerCount), "Partners"],
             ].map(([v, l], i) => (
-              <div key={l} className={`py-6 ${i ? "border-l-[1.5px] border-white/40 pl-4 md:pl-8" : ""}`}>
+              <div key={l} className={`px-5 py-7 md:px-10 ${i ? "border-l-[1.5px] border-white/40" : ""}`}>
                 <dt className="eyebrow text-volt-100">{l}</dt>
                 <dd className="display mt-3 text-[clamp(1.8rem,4.6vw,4.4rem)]">{v}</dd>
               </div>
@@ -188,42 +191,28 @@ export function PerksClient({ perks, logos }: { perks: Perk[]; logos: LogoMap })
             <h2 className="h-section">Find your perk.</h2>
           </div>
 
-          {/* toolbar */}
-          <div className="z-30 border-y-[1.5px] lg:sticky lg:top-[88px] rule-strong bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] backdrop-blur-xl">
-            <div className="flex flex-col gap-3 px-5 py-4 md:px-10 lg:flex-row lg:items-center">
-              <label className="flex h-12 w-full shrink-0 items-center gap-3 lg:w-auto lg:flex-1 rounded-full border-[1.5px] rule-strong bg-[var(--surface)] px-5 focus-within:border-volt">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.75" /><path d="m11 11 4 4" stroke="currentColor" strokeWidth="1.75" /></svg>
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search perks, partners, categories…" className="h-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-[var(--muted)]" />
-              </label>
-              <div className="flex h-12 shrink-0 rounded-full border-[1.5px] rule-strong p-1">
+          {/* filter bar — floats like the nav: same width, same pill shape */}
+          <div className="sticky top-[88px] z-30 px-3 py-3 md:top-[92px] md:px-5">
+            <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-3 rounded-full border-[1.5px] rule bg-[color-mix(in_srgb,var(--bg)_78%,transparent)] px-2 shadow-[0_10px_40px_-20px_rgba(4,5,13,0.35)] backdrop-blur-xl">
+              <div className="flex h-12 items-center gap-1 overflow-x-auto [scrollbar-width:none]">
                 {(["All", "Hosts", "Attendees"] as Audience[]).map((a) => (
-                  <button key={a} onClick={() => setAud(a)} className={`eyebrow flex-1 whitespace-nowrap rounded-full px-2.5 text-[0.62rem] transition-colors sm:px-4 sm:text-xs ${aud === a ? "bg-[var(--fg)] text-[var(--bg)]" : "hover:text-[var(--accent)]"}`}>
+                  <button key={a} onClick={() => setAud(a)} className={`eyebrow h-11 shrink-0 whitespace-nowrap rounded-full px-3 text-[0.62rem] transition-colors sm:px-5 sm:text-xs ${aud === a ? "bg-[var(--fg)] text-[var(--bg)]" : "hover:bg-[color-mix(in_srgb,var(--fg)_8%,transparent)]"}`}>
                     {a === "All" ? "Everyone" : `For ${a}`}
                   </button>
                 ))}
               </div>
-              <label className="flex h-12 shrink-0 items-center gap-2 rounded-full border-[1.5px] rule-strong px-4">
-                <span className="eyebrow text-[var(--muted)]">Sort</span>
-                <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="eyebrow bg-transparent outline-none">
+              <span className="eyebrow hidden text-[var(--muted)] md:inline">{list.length} {list.length === 1 ? "perk" : "perks"}</span>
+              <label className="flex h-11 shrink-0 items-center gap-2 rounded-full px-3 hover:bg-[color-mix(in_srgb,var(--fg)_8%,transparent)] sm:px-5">
+                <span className="eyebrow hidden text-[var(--muted)] sm:inline">Sort</span>
+                <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="eyebrow bg-transparent text-[0.62rem] outline-none sm:text-xs">
                   <option value="value">Highest value</option>
                   <option value="az">A – Z</option>
                   <option value="new">Newest</option>
                 </select>
               </label>
             </div>
-            <div className="flex gap-2 overflow-x-auto px-5 pb-4 md:px-10 [scrollbar-width:none]">
-              <button onClick={() => setCat("All")} className={`eyebrow shrink-0 rounded-full border-[1.5px] px-3 py-1.5 text-[0.65rem] ${cat === "All" ? "border-[var(--fg)] bg-[var(--fg)] text-[var(--bg)]" : "rule"}`}>All categories</button>
-              {categories.map((c) => (
-                <button key={c.name} onClick={() => setCat(cat === c.name ? "All" : c.name)}
-                  className="eyebrow inline-flex shrink-0 items-center gap-1.5 rounded-full border-[1.5px] px-3 py-1.5 text-[0.65rem] transition-colors"
-                  style={cat === c.name ? { background: c.hue, borderColor: c.hue, color: "#fff" } : { borderColor: `color-mix(in srgb, ${c.hue} 55%, transparent)` }}>
-                  <span style={{ color: cat === c.name ? "#fff" : c.hue }}>{c.glyph}</span>{c.name}
-                </button>
-              ))}
-            </div>
           </div>
 
-          <p className="eyebrow px-5 pt-6 text-[var(--muted)] md:px-10">{list.length} {list.length === 1 ? "perk" : "perks"}</p>
           <div className="grid gap-4 p-5 sm:grid-cols-2 md:p-10 lg:grid-cols-3">
             {list.map((p) => <PerkCard key={p.id} p={p} logo={logos[p.partnerSlug]} unlocked={!!member} onOpen={() => openPerk(p)} />)}
             {!list.length && (

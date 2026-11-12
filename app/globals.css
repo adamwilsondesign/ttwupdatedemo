@@ -271,3 +271,13 @@ html[data-preload] [data-intro] { animation-play-state: paused !important; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes meridian { 0% { transform: scaleX(1); } 50% { transform: scaleX(0); } 100% { transform: scaleX(-1); } }
 .meridian { transform-box: fill-box; transform-origin: center; animation: meridian 3.2s ease-in-out infinite alternate; }
+
+/* Footer wordmark: each letter blends from volt gradient to Signal as it rises */
+.footer-letter {
+  --lit: 0;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  background-image: linear-gradient(180deg, color-mix(in srgb, #d4ff3a calc(var(--lit) * 100%), #eef1ff) 0%, color-mix(in srgb, #d4ff3a calc(var(--lit) * 100%), #5c70ff) 55%, #1422b0 100%);
+  -webkit-background-clip: text; background-clip: text;
+  filter: drop-shadow(0 0 calc(var(--lit) * 28px) rgba(212, 255, 58, calc(var(--lit) * 0.55)));
+}

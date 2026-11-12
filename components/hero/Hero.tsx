@@ -24,6 +24,22 @@ export function Hero({ logos }: { logos: LogoMap }) {
   const knob = useRef<HTMLDivElement>(null);
   const trackEl = useRef<HTMLDivElement>(null);
   const [touched, setTouched] = useState(false);
+  const skyBox = useRef<HTMLDivElement>(null);
+  // viewBox sized to the container: always shows the full height (CN Tower
+  // tip to the rails) and reveals more city on wider screens, within limits
+  const VB_TOP = -100;
+  const [vbW, setVbW] = useState(1600);
+  useEffect(() => {
+    const el = skyBox.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => {
+      const { width, height } = e.contentRect;
+      if (!height) return;
+      setVbW(Math.round(Math.max(700, Math.min(2500, (width / height) * (VB_H - VB_TOP)))));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // rooftop billboards: presenting sponsors in frame, everyone else along the line
   const signs = useMemo(() => {
@@ -62,11 +78,12 @@ export function Hero({ logos }: { logos: LogoMap }) {
       // streetcar + joystick moving together (invites interaction)
       let target = 0;
       if (userDriving) target = s.input;
-      else if (!reduce && idleFor > 2.2 && Math.abs(s.world) < 260) target = Math.sin((s.t - s.lastInput) * 0.75) * 0.55;
+      else if (!reduce && idleFor > 2.2 && Math.abs(s.world) < 260) target = Math.sin((s.t - s.lastInput) * 0.5) * 0.55;
       s.j += (target - s.j) * Math.min(1, dt * (userDriving ? 18 : 4));
 
       // physics
-      const accel = s.j * 1500;
+      // autopilot cruises at roughly half the speed of manual driving
+      const accel = s.j * (userDriving ? 1500 : 500);
       s.v += accel * dt;
       s.v *= 1 - Math.min(1, 1.15 * dt);
       // after a long idle, cruise back to the downtown core
@@ -123,7 +140,7 @@ export function Hero({ logos }: { logos: LogoMap }) {
   };
 
   return (
-    <section data-tone="dark" id="top" className="relative overflow-hidden" onPointerMove={(e) => {
+    <section data-tone="dark" id="top" className="relative overflow-hidden md:h-[100svh] md:max-h-[1100px] md:min-h-[640px]" onPointerMove={(e) => {
       const w = window.innerWidth;
       sim.current.mouse = (e.clientX / w - 0.5) * -1;
     }}>
@@ -131,67 +148,67 @@ export function Hero({ logos }: { logos: LogoMap }) {
       <div className="pointer-events-none absolute inset-0 grad-horizon" />
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-40 [mask-image:radial-gradient(70%_60%_at_50%_30%,#000,transparent)]" />
 
-      <div className="frame mx-auto max-w-[1440px] pt-28 md:pt-[124px]">
+      <div className="frame mx-auto flex max-w-[1440px] flex-col pt-24 md:h-full md:pt-[100px]">
         <span className="cross -left-[9px] top-[88px]" />
         <span className="cross -right-[9px] top-[88px]" />
 
         {/* headline */}
-        <div className="relative z-10 px-4 text-center md:px-8">
+        <div className="relative z-10 shrink-0 px-4 text-center md:px-8">
           <h1>
-            <span className="block text-[clamp(1.35rem,2.4vw,2.25rem)] font-normal tracking-[-0.02em] text-[var(--muted)]" data-intro style={{ animation: "rise 1s var(--ease-out-expo) both" }}>
+            <span className="block text-[clamp(1.25rem,min(2.2vw,3.6vh),2.1rem)] font-normal tracking-[-0.02em] text-[var(--muted)]" data-intro style={{ animation: "rise 1s var(--ease-out-expo) both" }}>
               Host an event at
             </span>
-            <span className="display mt-2 block text-[clamp(3.1rem,7.7vw,8.4rem)] lg:whitespace-nowrap" data-intro style={{ animation: "rise 1.1s 80ms var(--ease-out-expo) both" }}>
+            <span className="display mt-1 block text-[clamp(3rem,min(7vw,11.5vh),8rem)] lg:whitespace-nowrap" data-intro style={{ animation: "rise 1.1s 80ms var(--ease-out-expo) both" }}>
               Toronto Tech Week <span className="text-volt-grad">2027</span>
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-full text-[clamp(1rem,1.35vw,1.25rem)] text-[var(--muted)] md:whitespace-nowrap" data-intro style={{ animation: "rise 1.1s 160ms var(--ease-out-expo) both" }}>
+          <p className="mx-auto mt-5 max-w-full text-[clamp(1rem,1.3vw,1.2rem)] text-[var(--muted)] md:whitespace-nowrap" data-intro style={{ animation: "rise 1.1s 160ms var(--ease-out-expo) both" }}>
             <span className="font-medium text-[var(--fg)]">{site.dates}</span>
             <span className="mx-3 text-signal">/</span>
             Join the community that brought 603 events to the city in 2026.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-intro style={{ animation: "rise 1.1s 240ms var(--ease-out-expo) both" }}>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3" data-intro style={{ animation: "rise 1.1s 240ms var(--ease-out-expo) both" }}>
             <a className="btn btn-signal" href={site.links.applyToHost}>Apply to Host <Arrow /></a>
             <a className="btn btn-ghost" href="#subscribe">Subscribe for Updates</a>
           </div>
-          <div className="eyebrow mt-5 flex items-center justify-center gap-6 text-[var(--muted)]">
+          <div className="eyebrow mt-4 flex items-center justify-center gap-6 text-[var(--muted)]">
             <a className="link-u hover:text-[var(--fg)]" href={site.links.hostingResources}>Hosting resources ↗</a>
             <a className="link-u hover:text-[var(--fg)]" href={site.links.hostQA}>Host Q&amp;A ↗</a>
           </div>
         </div>
 
         {/* skyline */}
-        <div className="relative mt-4 h-[max(320px,29vw)] max-h-[560px] w-full select-none md:mt-2" aria-hidden>
-          <svg className="absolute inset-0 h-full w-full" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMax slice">
+        <div ref={skyBox} className="relative mt-2 h-[340px] w-full select-none md:mt-0 md:h-auto md:min-h-[260px] md:flex-1" aria-hidden>
+          <svg className="absolute inset-0 h-full w-full" viewBox={`${VB_W / 2 - vbW / 2} ${VB_TOP} ${vbW} ${VB_H - VB_TOP}`} preserveAspectRatio="xMidYMax slice">
             <Defs />
-            <rect x={-1000} y={0} width={3600} height={VB_H} fill="url(#skyGlow)" />
+            <rect x={-1400} y={VB_TOP} width={4400} height={VB_H - VB_TOP} fill="url(#skyGlow)" />
             <g ref={far}><FarLayer /></g>
             <g ref={mid}><MidLayer presenting={signs.pres} others={signs.rest} /></g>
             {/* street (static) — near layer carries buildings, rails, ties, buffer stops */}
-            <rect x={-1000} y={GROUND} width={3600} height={VB_H - GROUND} fill="#05060f" />
-            <line x1={-1000} y1={GROUND + 14} x2={2600} y2={GROUND + 14} stroke="#3d4475" strokeWidth="1.5" strokeDasharray="10 8" />
+            <rect x={-1400} y={GROUND} width={4400} height={VB_H - GROUND} fill="#05060f" />
+            <line x1={-1400} y1={GROUND + 14} x2={3000} y2={GROUND + 14} stroke="#3d4475" strokeWidth="1.5" strokeDasharray="10 8" />
             <g ref={near}>
               <NearLayer />
-              <line x1={-3200} y1={GROUND + 1} x2={4800} y2={GROUND + 1} stroke="#dce2ff" strokeWidth="2" />
+              <line x1={-3800} y1={GROUND + 1} x2={5400} y2={GROUND + 1} stroke="#dce2ff" strokeWidth="2" />
               <Track />
             </g>
             {/* overhead wire */}
-            <path d={`M-1000,${WIRE_Y - 10} ${Array.from({ length: 16 }).map((_, k) => `Q${-880 + k * 240},${WIRE_Y - 2} ${-760 + k * 240},${WIRE_Y - 10}`).join(" ")}`} fill="none" stroke="#5c70ff" strokeWidth="1" />
-            <line x1={-1000} y1={WIRE_Y} x2={2600} y2={WIRE_Y} stroke="#b7c3ff" strokeWidth="1.25" />
+            <path d={`M-1400,${WIRE_Y - 10} ${Array.from({ length: 19 }).map((_, k) => `Q${-1280 + k * 240},${WIRE_Y - 2} ${-1160 + k * 240},${WIRE_Y - 10}`).join(" ")}`} fill="none" stroke="#5c70ff" strokeWidth="1" />
+            <line x1={-1400} y1={WIRE_Y} x2={3000} y2={WIRE_Y} stroke="#b7c3ff" strokeWidth="1.25" />
             <Streetcar ref={car} wheelRef={wheels} beamRef={beam} />
           </svg>
         </div>
 
         {/* control strip */}
-        <div className="relative grid grid-cols-1 border-t-[1.5px] rule-strong lg:grid-cols-[1fr_auto_1fr]">
+        <div className="relative grid shrink-0 grid-cols-1 border-t-[1.5px] rule-strong lg:grid-cols-[1fr_auto_1fr]">
           <span className="cross -left-[9px] -top-[9px]" />
           <span className="cross -right-[9px] -top-[9px]" />
-          <div className="order-3 flex items-center justify-center gap-5 border-t-[1.5px] rule px-6 py-6 lg:order-1 lg:justify-start lg:border-t-0 lg:border-r-[1.5px] lg:px-8">
+          <div className="order-3 flex items-center justify-center gap-5 border-t-[1.5px] rule px-6 py-6 lg:order-1 lg:justify-start lg:border-t-0 lg:border-r-[1.5px] lg:px-8 lg:py-4">
             <Countdown />
           </div>
 
           {/* joystick */}
-          <div className="order-1 flex flex-col items-center gap-3 px-8 py-6 lg:order-2">
+          <div className="order-1 flex flex-col items-center gap-2 px-8 py-5 lg:order-2 lg:py-4">
             <div className="flex items-center gap-4">
               <button aria-label="Drive left" className="eyebrow grid h-9 w-9 place-items-center rounded-full border-[1.5px] rule-strong hover:bg-[var(--fg)] hover:text-[var(--bg)]"
                 onPointerDown={() => { sim.current.keys = -1; sim.current.input = -1; setTouched(true); }}
@@ -205,7 +222,7 @@ export function Hero({ logos }: { logos: LogoMap }) {
                 aria-valuemin={-1}
                 aria-valuemax={1}
                 aria-valuenow={0}
-                className="relative h-[60px] w-[176px] cursor-grab touch-none rounded-full border-[1.5px] rule-strong bg-[var(--surface)] outline-none focus-visible:ring-2 focus-visible:ring-volt-400 active:cursor-grabbing"
+                className="relative h-[54px] w-[176px] cursor-grab touch-none rounded-full border-[1.5px] rule-strong bg-[var(--surface)] outline-none focus-visible:ring-2 focus-visible:ring-volt-400 active:cursor-grabbing"
                 onPointerDown={(e) => {
                   (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
                   sim.current.dragging = true; setTouched(true); setFromPointer(e.clientX);
@@ -229,8 +246,8 @@ export function Hero({ logos }: { logos: LogoMap }) {
             <p className="eyebrow text-[var(--muted)]">{touched ? "Next stop: TTW 2027" : "Drag to drive the 504 · end to end"}</p>
           </div>
 
-          <div className="order-2 border-t-[1.5px] rule px-6 py-6 lg:order-3 lg:border-l-[1.5px] lg:border-t-0 lg:px-8">
-            <p className="eyebrow mb-4 text-center text-[var(--muted)] lg:text-left">2027 Presenting Sponsors</p>
+          <div className="order-2 border-t-[1.5px] rule px-6 py-6 lg:order-3 lg:border-l-[1.5px] lg:border-t-0 lg:px-8 lg:py-4">
+            <p className="eyebrow mb-3 text-center text-[var(--muted)] lg:text-left">2027 Presenting Sponsors</p>
             <div className="grid grid-cols-4 items-center gap-4">
               {presenting.map((o) => (
                 <Logo key={o.slug} org={o} src={logos[o.slug]} className="h-7" />

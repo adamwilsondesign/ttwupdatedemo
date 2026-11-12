@@ -36,6 +36,9 @@ npm run build    # static export to ./out
 | Sign-in (Google / Microsoft / email code), 3 questions, beehiiv opt-in, unlocked state, redemption | `components/perks/AuthModal.tsx`, `RedeemModal.tsx` |
 | Analytics plan | `lib/analytics.ts` (dataLayer events: `perk_impression`, `perk_click`, `perk_redeem`, `account_created{source}`, …) |
 
+## Homepage content (pre-conference structure)
+Follows the March 2026 pre-conference homepage: hosts → upcoming events (flagship Homecoming card + day timetable) → featured speakers → sponsors → founding / in-kind partners → About + FAQ preview → 2026 impact → community wall → "Toronto is open" signup. Speakers and events are **placeholders** in `data/lineup.ts`.
+
 ## Placeholders / TODO
 - Form, beehiiv and report URLs: `lib/site.config.ts`
 - Data files are shaped like the proposed Airtable tables. Swap them for an Airtable fetch at build time (or via ISR).

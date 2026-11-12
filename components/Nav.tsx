@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { site } from "@/lib/site.config";
+import { TTWLogo } from "@/components/TTWLogo";
 
 const left = [
   { label: "About", href: "/about/" },
@@ -38,9 +39,8 @@ export function Nav() {
         </ul>
         <button className="eyebrow md:hidden" onClick={() => setOpen(true)} aria-label="Open menu">Menu</button>
 
-        <Link href="/" aria-label="Toronto Tech Week home" className="flex items-center gap-2.5">
-          <Mark />
-          <span className="hidden text-[1.15rem] font-medium tracking-[-0.035em] sm:inline">Toronto Tech Week</span>
+        <Link href="/" aria-label="Toronto Tech Week home" className="flex items-center transition-opacity hover:opacity-80">
+          <TTWLogo className="h-[18px] w-[150px] sm:h-6 sm:w-[234px]" />
         </Link>
 
         <ul className="hidden items-center justify-end gap-1 md:flex">
@@ -57,7 +57,7 @@ export function Nav() {
       {open && (
         <div className="fixed inset-0 z-50 flex flex-col bg-[var(--bg)] p-6" style={{ animation: "rise 500ms var(--ease-out-expo) both" }}>
           <div className="flex items-center justify-between">
-            <Mark />
+            <TTWLogo className="h-5 w-[190px]" />
             <button className="eyebrow" onClick={() => setOpen(false)}>Close</button>
           </div>
           <ul className="mt-16 space-y-2">
