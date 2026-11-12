@@ -80,10 +80,10 @@ function Card({ p }: { p: Post }) {
   );
 }
 
-export function SocialWall() {
+export function SocialWall({ tone = "dark" }: { tone?: "dark" | "light" }) {
   const cols = [0, 1, 2, 3].map((c) => posts.filter((_, i) => i % 4 === c));
   return (
-    <Section tone="light" id="community">
+    <Section tone={tone} id="community">
       <svg width="0" height="0" className="absolute">
         <defs>
           <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
@@ -109,7 +109,7 @@ export function SocialWall() {
           {[...posts, ...posts].map((p, i) => <div key={i} className="w-[290px] shrink-0"><Card p={p} /></div>)}
         </div>
       </div>
-      <div className="marquee-wrap mask-y relative hidden h-[820px] overflow-hidden border-t-[1.5px] rule-strong px-4 sm:block md:px-10">
+      <div className="marquee-wrap mask-y relative hidden h-[900px] overflow-hidden border-t-[1.5px] rule-strong px-4 sm:block md:px-10">
         <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {cols.map((col, ci) => (
             <div key={ci} className={`overflow-hidden ${ci > 1 ? "hidden lg:block" : ""}`}>

@@ -22,19 +22,19 @@ function Tier({ label, orgs, logos, size, cols }: { label: string; orgs: Org[]; 
   );
 }
 
-export function Sponsors({ logos }: { logos: LogoMap }) {
+export function Sponsors({ logos, tone = "light", index = "02" }: { logos: LogoMap; tone?: "dark" | "light"; index?: string }) {
   return (
-    <Section tone="dark" id="sponsors">
+    <Section tone={tone} id="sponsors">
       <SectionHead
-        index="02"
+        index={index}
         eyebrow="2027 Sponsors"
         title="Backed by the builders of Toronto."
         action={<a href={site.links.sponsorship} className="btn btn-ghost">Become a sponsor</a>}
       />
-      <Tier label="Presenting" orgs={presenting} logos={logos} size="h-36 md:h-44 [&_img]:max-h-12 md:[&_img]:max-h-14" cols="grid-cols-2 md:grid-cols-4" />
-      <Tier label="Signature" orgs={signature} logos={logos} size="h-28 md:h-32 [&_img]:max-h-9" cols="grid-cols-2 md:grid-cols-4" />
-      <Tier label="Supporting" orgs={supporting} logos={logos} size="h-24 md:h-28 [&_img]:max-h-8" cols="grid-cols-3" />
-      <div className="border-t-[1.5px] rule h-16" />
+      <Tier label="Presenting" orgs={presenting} logos={logos} size="h-40 md:h-52 [&_img]:max-h-12 md:[&_img]:max-h-14" cols="grid-cols-2 md:grid-cols-4" />
+      <Tier label="Signature" orgs={signature} logos={logos} size="h-32 md:h-40 [&_img]:max-h-9" cols="grid-cols-2 md:grid-cols-4" />
+      <Tier label="Supporting" orgs={supporting} logos={logos} size="h-28 md:h-36 [&_img]:max-h-8" cols="grid-cols-3" />
+      <div className="h-28 border-t-[1.5px] rule md:h-40" />
     </Section>
   );
 }

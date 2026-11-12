@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
 import { Section, SectionHead } from "@/components/Section";
 import { Faq } from "@/components/Faq";
+import { RailTrack } from "@/components/RailTrack";
 
 export const metadata: Metadata = { title: "FAQ · Toronto Tech Week 2027" };
 
@@ -22,16 +23,18 @@ export default function FaqPage() {
   return (
     <>
       <PageHero eyebrow="FAQ" title="Questions, answered." />
+      <RailTrack>
       <Section tone="light">
         <SectionHead index="01" eyebrow="General" title="The basics." />
         <Faq items={general} />
         <div className="h-16 border-t-[1.5px] rule" />
       </Section>
-      <Section tone="dark" id="hosting">
+      <Section tone="light" id="hosting">
         <SectionHead index="02" eyebrow="Hosting" title="Hosting an event." />
         <Faq items={hosting} />
-        <div className="h-16 border-t-[1.5px] rule" />
+        <div className="h-28 border-t-[1.5px] rule" />
       </Section>
+      </RailTrack>
     </>
   );
 }

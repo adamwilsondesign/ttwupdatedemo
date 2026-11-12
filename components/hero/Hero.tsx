@@ -1,29 +1,46 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Defs, FarLayer, MidLayer, NearLayer, Ties, VB_W, VB_H, GROUND, RAIL_Y } from "./SkylineLayers";
+import { Defs, FarLayer, MidLayer, NearLayer, Track, VB_W, VB_H, GROUND, RAIL_Y, MAX_WORLD, type SignData } from "./SkylineLayers";
 import { Streetcar, CAR_W, CAR_H } from "./Streetcar";
 import { site } from "@/lib/site.config";
-import { presenting } from "@/data/sponsors";
+import { presenting, signature, supporting, founding } from "@/data/sponsors";
+import { hosts } from "@/data/hosts";
+import { useMemo } from "react";
 import { Logo } from "@/components/Logo";
 import type { LogoMap } from "@/lib/logos";
 import { Countdown } from "./Countdown";
 
 const WIRE_Y = RAIL_Y - CAR_H + 2 - 43;
-const MAX_WORLD = 640;
 const KNOB_TRAVEL = 52;
 
 export function Hero({ logos }: { logos: LogoMap }) {
   const far = useRef<SVGGElement>(null);
   const mid = useRef<SVGGElement>(null);
   const near = useRef<SVGGElement>(null);
-  const ties = useRef<SVGGElement>(null);
   const car = useRef<SVGGElement>(null);
   const beam = useRef<SVGGElement>(null);
   const wheels = useRef<(SVGGElement | null)[]>([]);
   const knob = useRef<HTMLDivElement>(null);
   const trackEl = useRef<HTMLDivElement>(null);
   const [touched, setTouched] = useState(false);
+
+  // rooftop billboards: presenting sponsors in frame, everyone else along the line
+  const signs = useMemo(() => {
+    const pres: SignData[] = presenting.filter((o) => !o.tba).map((o) => ({ name: o.name, src: logos[o.slug] }));
+    const seen = new Set<string>(presenting.flatMap((o) => [o.slug, logos[o.slug]].filter(Boolean) as string[]));
+    const rest: SignData[] = [];
+    for (const o of [...signature, ...supporting, ...founding, ...hosts.filter((h) => h.featureOnHomepage)]) {
+      const src = logos[o.slug];
+      if (seen.has(o.slug) || (src && seen.has(src))) continue;
+      seen.add(o.slug);
+      if (src) seen.add(src);
+      rest.push({ name: o.name, src: logos[o.slug] });
+    }
+    // logos first so the most recognisable marks get the billboards
+    rest.sort((a, b) => Number(!!b.src) - Number(!!a.src));
+    return { pres, rest };
+  }, [logos]);
 
   // mutable sim state — never triggers React renders
   const sim = useRef({ world: 0, v: 0, j: 0, input: 0, dragging: false, keys: 0, lastInput: -10, carX: 0, mouse: 0, t: 0 });
@@ -45,14 +62,15 @@ export function Hero({ logos }: { logos: LogoMap }) {
       // streetcar + joystick moving together (invites interaction)
       let target = 0;
       if (userDriving) target = s.input;
-      else if (!reduce && idleFor > 2.2) target = Math.sin((s.t - s.lastInput) * 0.75) * 0.55;
+      else if (!reduce && idleFor > 2.2 && Math.abs(s.world) < 260) target = Math.sin((s.t - s.lastInput) * 0.75) * 0.55;
       s.j += (target - s.j) * Math.min(1, dt * (userDriving ? 18 : 4));
 
       // physics
-      const accel = s.j * 950;
+      const accel = s.j * 1500;
       s.v += accel * dt;
-      s.v *= 1 - Math.min(1, 1.6 * dt);
-      if (!userDriving) s.v += -s.world * 0.9 * dt; // drift home so the CN Tower stays framed
+      s.v *= 1 - Math.min(1, 1.15 * dt);
+      // after a long idle, cruise back to the downtown core
+      if (!userDriving && idleFor > 7 && Math.abs(s.world) > 260) s.v += -Math.sign(s.world) * 160 * dt;
       s.world += s.v * dt;
       if (s.world > MAX_WORLD) { s.world = MAX_WORLD; s.v = Math.min(0, s.v); }
       if (s.world < -MAX_WORLD) { s.world = -MAX_WORLD; s.v = Math.max(0, s.v); }
@@ -66,7 +84,6 @@ export function Hero({ logos }: { logos: LogoMap }) {
       far.current?.setAttribute("transform", `translate(${-s.world * 0.18 + m * 6} 0)`);
       mid.current?.setAttribute("transform", `translate(${-s.world * 0.45 + m * 12} 0)`);
       near.current?.setAttribute("transform", `translate(${-s.world + m * 20} 0)`);
-      ties.current?.setAttribute("transform", `translate(${-(((s.world % 18) + 18) % 18) + m * 20} 0)`);
       const cx = VB_W / 2 - CAR_W / 2 + s.carX + m * 20;
       const cy = RAIL_Y - CAR_H + 2;
       car.current?.setAttribute("transform", `translate(${cx} ${cy}) rotate(${tilt} ${CAR_W / 2} ${CAR_H})`);
@@ -121,20 +138,20 @@ export function Hero({ logos }: { logos: LogoMap }) {
         {/* headline */}
         <div className="relative z-10 px-4 text-center md:px-8">
           <h1>
-            <span className="block text-[clamp(1.35rem,2.4vw,2.25rem)] font-normal tracking-[-0.02em] text-[var(--muted)]" style={{ animation: "rise 1s var(--ease-out-expo) both" }}>
+            <span className="block text-[clamp(1.35rem,2.4vw,2.25rem)] font-normal tracking-[-0.02em] text-[var(--muted)]" data-intro style={{ animation: "rise 1s var(--ease-out-expo) both" }}>
               Host an event at
             </span>
-            <span className="display mt-2 block text-[clamp(3.1rem,7.7vw,8.4rem)] lg:whitespace-nowrap" style={{ animation: "rise 1.1s 80ms var(--ease-out-expo) both" }}>
+            <span className="display mt-2 block text-[clamp(3.1rem,7.7vw,8.4rem)] lg:whitespace-nowrap" data-intro style={{ animation: "rise 1.1s 80ms var(--ease-out-expo) both" }}>
               Toronto Tech Week <span className="text-volt-grad">2027</span>
             </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-full text-[clamp(1rem,1.35vw,1.25rem)] text-[var(--muted)] md:whitespace-nowrap" style={{ animation: "rise 1.1s 160ms var(--ease-out-expo) both" }}>
+          <p className="mx-auto mt-6 max-w-full text-[clamp(1rem,1.35vw,1.25rem)] text-[var(--muted)] md:whitespace-nowrap" data-intro style={{ animation: "rise 1.1s 160ms var(--ease-out-expo) both" }}>
             <span className="font-medium text-[var(--fg)]">{site.dates}</span>
-            <span className="mx-3 text-volt-400">/</span>
+            <span className="mx-3 text-signal">/</span>
             Join the community that brought 603 events to the city in 2026.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3" style={{ animation: "rise 1.1s 240ms var(--ease-out-expo) both" }}>
-            <a className="btn btn-volt" href={site.links.applyToHost}>Apply to Host <Arrow /></a>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3" data-intro style={{ animation: "rise 1.1s 240ms var(--ease-out-expo) both" }}>
+            <a className="btn btn-signal" href={site.links.applyToHost}>Apply to Host <Arrow /></a>
             <a className="btn btn-ghost" href="#subscribe">Subscribe for Updates</a>
           </div>
           <div className="eyebrow mt-5 flex items-center justify-center gap-6 text-[var(--muted)]">
@@ -147,20 +164,20 @@ export function Hero({ logos }: { logos: LogoMap }) {
         <div className="relative mt-4 h-[max(320px,29vw)] max-h-[560px] w-full select-none md:mt-2" aria-hidden>
           <svg className="absolute inset-0 h-full w-full" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMax slice">
             <Defs />
-            <rect x={-700} y={0} width={3000} height={VB_H} fill="url(#skyGlow)" />
+            <rect x={-1000} y={0} width={3600} height={VB_H} fill="url(#skyGlow)" />
             <g ref={far}><FarLayer /></g>
-            <g ref={mid}><MidLayer /></g>
-            <g ref={near}><NearLayer /></g>
-            {/* street */}
-            <rect x={-700} y={GROUND} width={3000} height={VB_H - GROUND} fill="#05060f" />
-            <line x1={-700} y1={GROUND + 1} x2={2300} y2={GROUND + 1} stroke="#dce2ff" strokeWidth="2" />
-            <line x1={-700} y1={GROUND + 14} x2={2300} y2={GROUND + 14} stroke="#3d4475" strokeWidth="1.5" strokeDasharray="10 8" />
-            <g ref={ties}><Ties /></g>
-            <line x1={-700} y1={RAIL_Y} x2={2300} y2={RAIL_Y} stroke="#8a9bff" strokeWidth="2.5" />
-            <line x1={-700} y1={RAIL_Y + 8} x2={2300} y2={RAIL_Y + 8} stroke="#5c70ff" strokeWidth="2" />
+            <g ref={mid}><MidLayer presenting={signs.pres} others={signs.rest} /></g>
+            {/* street (static) — near layer carries buildings, rails, ties, buffer stops */}
+            <rect x={-1000} y={GROUND} width={3600} height={VB_H - GROUND} fill="#05060f" />
+            <line x1={-1000} y1={GROUND + 14} x2={2600} y2={GROUND + 14} stroke="#3d4475" strokeWidth="1.5" strokeDasharray="10 8" />
+            <g ref={near}>
+              <NearLayer />
+              <line x1={-3200} y1={GROUND + 1} x2={4800} y2={GROUND + 1} stroke="#dce2ff" strokeWidth="2" />
+              <Track />
+            </g>
             {/* overhead wire */}
-            <path d={`M-700,${WIRE_Y - 10} ${Array.from({ length: 13 }).map((_, k) => `Q${-580 + k * 240},${WIRE_Y - 2} ${-460 + k * 240},${WIRE_Y - 10}`).join(" ")}`} fill="none" stroke="#5c70ff" strokeWidth="1" />
-            <line x1={-700} y1={WIRE_Y} x2={2300} y2={WIRE_Y} stroke="#b7c3ff" strokeWidth="1.25" />
+            <path d={`M-1000,${WIRE_Y - 10} ${Array.from({ length: 16 }).map((_, k) => `Q${-880 + k * 240},${WIRE_Y - 2} ${-760 + k * 240},${WIRE_Y - 10}`).join(" ")}`} fill="none" stroke="#5c70ff" strokeWidth="1" />
+            <line x1={-1000} y1={WIRE_Y} x2={2600} y2={WIRE_Y} stroke="#b7c3ff" strokeWidth="1.25" />
             <Streetcar ref={car} wheelRef={wheels} beamRef={beam} />
           </svg>
         </div>
@@ -209,7 +226,7 @@ export function Hero({ logos }: { logos: LogoMap }) {
                 onPointerUp={() => { sim.current.keys = 0; sim.current.input = 0; sim.current.lastInput = sim.current.t; }}
                 onPointerLeave={() => { if (sim.current.keys === 1) { sim.current.keys = 0; sim.current.input = 0; } }}>▶</button>
             </div>
-            <p className="eyebrow text-[var(--muted)]">{touched ? "Next stop: TTW 2027" : "Drag to drive the 504"}</p>
+            <p className="eyebrow text-[var(--muted)]">{touched ? "Next stop: TTW 2027" : "Drag to drive the 504 · end to end"}</p>
           </div>
 
           <div className="order-2 border-t-[1.5px] rule px-6 py-6 lg:order-3 lg:border-l-[1.5px] lg:border-t-0 lg:px-8">

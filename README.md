@@ -14,6 +14,12 @@ npm run build    # static export to ./out
 - **Linework:** 1.5px high-contrast rules, framed columns and registration crosshairs at every intersection.
 - **Light/dark:** there's no toggle. Each section declares `data-tone`, and `components/PageFx.tsx` flips `html[data-tone]` as sections cross the middle of the viewport. Colours are registered `@property` variables, so the whole page crossfades (`app/globals.css`).
 
+- **Accent:** Signal `#D4FF3A` (electric lime) is the one supplementary colour. It's used for primary CTAs, live states, the track system, stat suffixes and the presenting-sponsor billboards.
+- **Tone rhythm:** two swaps on the homepage only: night (hero + hosts) → day (sponsors, partners, impact) → night (community + footer).
+- **Track system:** `components/RailTrack.tsx`. A double rail leaves the hero street, bends down the gutter column of every page, passes a "Stop 0X" station at each section head (lit as you pass), and carries a tram that rides with scroll. The line ends at a buffer stop.
+- **Hero city:** about 3× wider drive range (±3000 units) with end-of-line buffer stops. Rooftop billboards carry the presenting sponsors in frame, with signature, supporting, founding and featured hosts along the line.
+- **Preloader:** `components/Preloader.tsx`. A wireframe globe inside a rotating ring of type, with a track progress bar. It shows once per session; add `?nopreload` to skip it.
+
 ## Feedback → implementation
 | Ask | Where |
 | --- | --- |

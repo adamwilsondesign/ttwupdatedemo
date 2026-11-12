@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
 import { Section, SectionHead } from "@/components/Section";
 import { Impact } from "@/components/home/Impact";
+import { RailTrack } from "@/components/RailTrack";
 
 export const metadata: Metadata = { title: "About · Toronto Tech Week" };
 
@@ -19,8 +20,9 @@ export default function AboutPage() {
   return (
     <>
       <PageHero eyebrow="About" title={<>Toronto has always been a city of <span className="text-volt-grad">builders.</span></>} />
+      <RailTrack>
       <Section tone="light">
-        <div className="grid gap-10 px-5 py-20 md:px-10 md:py-28 lg:grid-cols-2">
+        <div className="grid gap-10 px-[var(--pad)] py-20 md:px-10 md:py-28 lg:grid-cols-2">
           <p className="text-[clamp(1.6rem,2.8vw,2.6rem)] font-medium leading-[1.1] tracking-[-0.035em]">
             The talent was already here. The creativity was already here. What Toronto lacked was a moment that brought it all together.
           </p>
@@ -30,7 +32,7 @@ export default function AboutPage() {
           </div>
         </div>
       </Section>
-      <Section tone="dark">
+      <Section tone="light">
         <SectionHead index="02" eyebrow="Founding members & team" title="The people behind the week." />
         <ul className="grid border-t-[1.5px] rule sm:grid-cols-2 lg:grid-cols-4">
           {team.map(([n, r], i) => (
@@ -42,7 +44,8 @@ export default function AboutPage() {
         </ul>
         <div className="h-16" />
       </Section>
-      <Impact />
+      <Impact index="03" />
+      </RailTrack>
     </>
   );
 }

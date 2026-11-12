@@ -32,7 +32,7 @@ export function Footer() {
             <div className="mt-4 flex items-center gap-2 rounded-full border-[1.5px] rule-strong p-1.5 focus-within:border-volt-400">
               <input id="footer-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com"
                 className="h-11 min-w-0 flex-1 bg-transparent px-4 text-lg outline-none placeholder:text-[var(--muted)]" />
-              <button className="btn btn-volt h-11">{done ? "Subscribed ✓" : "Subscribe"}</button>
+              <button className="btn btn-signal h-11">{done ? "Subscribed ✓" : "Subscribe"}</button>
             </div>
           </form>
         </div>

@@ -26,7 +26,7 @@ export function Countdown() {
               <div className="font-mono text-[1.9rem] leading-none tabular-nums tracking-tight">{v === undefined ? "––" : String(v).padStart(i === 0 ? 3 : 2, "0")}</div>
               <div className="eyebrow mt-1 text-[0.6rem] text-[var(--muted)]">{l}</div>
             </div>
-            {i < 3 && <span className="pb-5 text-volt-400">:</span>}
+            {i < 3 && <span className="pb-5 text-signal">:</span>}
           </div>
         ))}
       </div>

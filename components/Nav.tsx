@@ -47,10 +47,10 @@ export function Nav() {
           {right.map((l) => (
             <li key={l.label}><Link href={l.href} className="rounded-full px-4 py-2 text-[0.95rem] transition-colors hover:bg-[var(--fg)] hover:text-[var(--bg)]">{l.label}</Link></li>
           ))}
-          <li><a href={site.links.applyToHost} className="btn btn-volt ml-2 h-10 px-4 text-[0.7rem]">Apply to Host</a></li>
+          <li><a href={site.links.applyToHost} className="btn btn-signal ml-2 h-10 px-4 text-[0.7rem]">Apply to Host</a></li>
         </ul>
         <div className="flex justify-end md:hidden">
-          <a href={site.links.applyToHost} className="btn btn-volt h-10 px-4 text-[0.65rem]">Host</a>
+          <a href={site.links.applyToHost} className="btn btn-signal h-10 px-4 text-[0.65rem]">Host</a>
         </div>
       </nav>
 

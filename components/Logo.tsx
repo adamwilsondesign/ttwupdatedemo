@@ -18,7 +18,7 @@ export function Logo({ org, src, className = "h-8", wordmarkClass = "" }: {
     return <img src={src} alt={org.name} loading="lazy" className={`logo-img mx-auto w-auto max-w-full object-contain ${className}`} />;
   }
   return (
-    <span className={`block truncate text-center font-medium tracking-[-0.03em] ${wordmarkClass}`} title={org.name}>
+    <span className={`block text-center font-medium tracking-[-0.03em] ${wordmarkClass.includes("line-clamp") ? "" : "truncate"} ${wordmarkClass}`} title={org.name}>
       {org.name}
     </span>
   );

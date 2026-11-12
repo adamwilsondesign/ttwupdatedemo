@@ -23,5 +23,5 @@ export function CountUp({ value, suffix = "", duration = 1800 }: { value: number
     io.observe(el);
     return () => io.disconnect();
   }, [value, duration]);
-  return <span ref={ref} className="tabular-nums">{n.toLocaleString("en-CA")}{suffix}</span>;
+  return <span ref={ref} className="tabular-nums">{n.toLocaleString("en-CA")}{suffix && <span className="text-signal">{suffix}</span>}</span>;
 }

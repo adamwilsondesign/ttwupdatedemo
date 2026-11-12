@@ -1,5 +1,6 @@
 /* Layered Toronto skyline. One coordinate system (viewBox 0 0 1600 520),
-   drawn from x=-700 → 2300 so layers can parallax without gaps.
+   Each layer is drawn wide enough for its parallax factor over the full
+   drive range (±MAX_WORLD): far ×0.18, mid ×0.45, near ×1.
    GROUND = 430 is the base line for every building. */
 import { memo } from "react";
 
@@ -7,6 +8,33 @@ export const VB_W = 1600;
 export const VB_H = 520;
 export const GROUND = 430;
 export const RAIL_Y = 490;
+export const MAX_WORLD = 3000;
+export const TRACK_L = -2420;
+export const TRACK_R = 4020;
+
+export type SignData = { name: string; src?: string };
+
+/* Rooftop billboard: legs + lit panel + partner logo flattened to white. */
+function Sign({ cx, roof, w = 104, h = 36, data, hot = false }: { cx: number; roof: number; w?: number; h?: number; data: SignData; hot?: boolean }) {
+  const x = cx - w / 2;
+  const y = roof - 12 - h;
+  const stroke = hot ? "#d4ff3a" : "#b7c3ff";
+  return (
+    <g>
+      <line x1={cx - w * 0.3} y1={roof} x2={cx - w * 0.3} y2={y + h} stroke={stroke} strokeWidth="1.5" />
+      <line x1={cx + w * 0.3} y1={roof} x2={cx + w * 0.3} y2={y + h} stroke={stroke} strokeWidth="1.5" />
+      <line x1={cx - w * 0.3} y1={roof - 6} x2={cx + w * 0.3} y2={roof - 6} stroke={stroke} strokeWidth="1" />
+      <rect x={x - 4} y={y - 4} width={w + 8} height={h + 8} rx={7} fill={hot ? "#d4ff3a" : "#5c70ff"} opacity={hot ? 0.16 : 0.14} />
+      <rect x={x} y={y} width={w} height={h} rx={4} fill="#05060f" stroke={stroke} strokeWidth="1.75" />
+      {data.src ? (
+        <image href={data.src} x={x + 10} y={y + 7} width={w - 20} height={h - 14} preserveAspectRatio="xMidYMid meet" filter="url(#toWhite)" />
+      ) : (
+        <text x={cx} y={y + h / 2 + 5} textAnchor="middle" fontSize="13" fontFamily="volksans" fill="#eef1ff" letterSpacing="-0.4">{data.name}</text>
+      )}
+      {[0.2, 0.5, 0.8].map((t) => <circle key={t} cx={x + w * t} cy={y + h + 2.5} r={1.4} fill={stroke} />)}
+    </g>
+  );
+}
 
 function rng(seed: number) {
   let s = seed >>> 0;
@@ -83,6 +111,9 @@ export function Defs() {
         <stop offset="0" stopColor="#b7c3ff" stopOpacity="0.8" />
         <stop offset="1" stopColor="#2e46ff" stopOpacity="0" />
       </radialGradient>
+      <filter id="toWhite" colorInterpolationFilters="sRGB">
+        <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0" />
+      </filter>
       <pattern id="winFar" width="6" height="8" patternUnits="userSpaceOnUse">
         <rect width="2" height="3" fill="#1c30e6" opacity="0.45" />
       </pattern>
@@ -103,9 +134,9 @@ export function Defs() {
 export const FarLayer = memo(function FarLayer() {
   const r = rng(7);
   const items: React.ReactNode[] = [];
-  let x = -700;
+  let x = -950;
   let i = 0;
-  while (x < 2300) {
+  while (x < 2550) {
     const w = 26 + Math.floor(r() * 44);
     // taller cluster around downtown core (x≈900–1500)
     const core = Math.exp(-Math.pow((x - 1150) / 520, 2));
@@ -124,7 +155,7 @@ export const FarLayer = memo(function FarLayer() {
 });
 
 /* ── MID: Toronto landmarks + filler towers, heavy linework, extruded ── */
-export const MidLayer = memo(function MidLayer() {
+export const MidLayer = memo(function MidLayer({ presenting, others }: { presenting: SignData[]; others: SignData[] }) {
   const r = rng(42);
   const S = "#8a9bff";
   const fillers: React.ReactNode[] = [];
@@ -132,12 +163,25 @@ export const MidLayer = memo(function MidLayer() {
     const h = GROUND - top;
     fillers.push(<Box key={`f${k}`} x={x} y={top} w={w} h={h} front="url(#midFill)" side="url(#midSide)" stroke={S} win="url(#winMid)" lit={litWindows(r, x, top, w, h, Math.round(h / 40))} />);
   };
-  // left of frame (only visible when driving)
-  [[-640, 50, 250], [-560, 40, 300], [-480, 62, 210], [-380, 44, 270], [-300, 58, 230], [-200, 36, 320], [-130, 54, 260], [-40, 46, 290], [40, 60, 240], [120, 40, 280]]
-    .forEach(([x, w, t], k) => filler(x, w, t, k));
-  // right of frame
-  [[1500, 48, 230], [1560, 60, 270], [1640, 40, 200], [1700, 58, 250], [1780, 44, 300], [1850, 62, 260], [1940, 40, 230], [2010, 56, 290], [2100, 48, 250], [2180, 60, 280]]
-    .forEach(([x, w, t], k) => filler(x, w, t, 100 + k));
+  // procedural towers beyond the downtown core — revealed as you drive
+  const signs: React.ReactNode[] = [];
+  let si = 0;
+  const strip = (from: number, to: number, base: number) => {
+    let x = from;
+    let k = base;
+    while (x < to) {
+      const w = 40 + Math.floor(r() * 30);
+      const top = 190 + Math.floor(r() * 130);
+      filler(x, w, top, k);
+      if (k % 3 === 0 && others.length) {
+        signs.push(<Sign key={`s${k}`} cx={x + w / 2} roof={top - 4} data={others[si++ % others.length]} />);
+      }
+      x += w + 14 + Math.floor(r() * 26);
+      k++;
+    }
+  };
+  strip(-1520, 170, 0);
+  strip(1500, 3120, 1000);
   // in-frame fillers between landmarks
   [[365, 34, 280], [580, 40, 255], [1188, 22, 250]].forEach(([x, w, t], k) => filler(x, w, t, 200 + k));
 
@@ -258,6 +302,12 @@ export const MidLayer = memo(function MidLayer() {
         })}
         <path d="M1412,64 h40" stroke="#eef1ff" strokeWidth="2" />
       </g>
+
+      {/* rooftop billboards */}
+      {signs}
+      {presenting[0] && <Sign cx={926} roof={243} w={96} data={presenting[0]} hot />}
+      {presenting[1] && <Sign cx={1108} roof={140} data={presenting[1]} hot />}
+      {presenting[2] && <Sign cx={1367} roof={176} w={96} data={presenting[2]} hot />}
     </g>
   );
 });
@@ -267,9 +317,9 @@ export const NearLayer = memo(function NearLayer() {
   const r = rng(99);
   const S = "#b7c3ff";
   const items: React.ReactNode[] = [];
-  let x = -720;
+  let x = -3150;
   let i = 0;
-  while (x < 2320) {
+  while (x < 4750) {
     const w = 46 + Math.floor(r() * 46);
     const h = 36 + Math.floor(r() * 44);
     const y = GROUND - h;
@@ -301,7 +351,7 @@ export const NearLayer = memo(function NearLayer() {
     x += w + 8 + Math.floor(r() * 10);
   }
   // catenary poles every 240 units
-  for (let px = -700; px < 2300; px += 240) {
+  for (let px = -3100; px < 4700; px += 240) {
     items.push(
       <g key={`pole${px}`}>
         <line x1={px} y1={GROUND + 6} x2={px} y2={340} stroke="#dce2ff" strokeWidth="2.5" />
@@ -313,13 +363,27 @@ export const NearLayer = memo(function NearLayer() {
   return <g>{items}</g>;
 });
 
-/* ── TRACK: ties scroll with the world ── */
-export function Ties() {
+/* ── TRACK: rails, ties and buffer stops — part of the near layer ── */
+export function Track() {
+  const n = Math.floor((TRACK_R - TRACK_L) / 18);
+  const Buffer = ({ x, dir }: { x: number; dir: 1 | -1 }) => (
+    <g>
+      <path d={`M${x},${RAIL_Y + 12} v-30 h${dir * 14} v30`} fill="none" stroke="#dce2ff" strokeWidth="2" />
+      <rect x={dir === 1 ? x : x - 22} y={RAIL_Y - 26} width={22} height={12} rx={2} fill="#d4ff3a" stroke="#04050d" strokeWidth="1.5" />
+      <path d={`M${dir === 1 ? x + 4 : x - 18},${RAIL_Y - 20} h14`} stroke="#04050d" strokeWidth="3" strokeDasharray="3 3" />
+      <text x={x - dir * 46} y={RAIL_Y - 40} textAnchor="middle" fontSize="11" fontFamily="decimaMono, monospace" letterSpacing="2" fill="#d4ff3a">END OF LINE</text>
+      <rect x={x - dir * 46 - 3} y={RAIL_Y - 34} width={6} height={44} fill="#dce2ff" />
+    </g>
+  );
   return (
     <g>
-      {Array.from({ length: 170 }).map((_, k) => (
-        <rect key={k} x={-700 + k * 18} y={RAIL_Y - 3} width={6} height={13} fill="#1422b0" />
+      {Array.from({ length: n }).map((_, k) => (
+        <rect key={k} x={TRACK_L + 6 + k * 18} y={RAIL_Y - 3} width={6} height={13} fill="#1422b0" />
       ))}
+      <line x1={TRACK_L} y1={RAIL_Y} x2={TRACK_R} y2={RAIL_Y} stroke="#8a9bff" strokeWidth="2.5" />
+      <line x1={TRACK_L} y1={RAIL_Y + 8} x2={TRACK_R} y2={RAIL_Y + 8} stroke="#5c70ff" strokeWidth="2" />
+      <Buffer x={TRACK_L} dir={1} />
+      <Buffer x={TRACK_R} dir={-1} />
     </g>
   );
 }

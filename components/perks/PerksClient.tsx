@@ -22,9 +22,10 @@ export function CategoryTag({ c, small }: { c: Category; small?: boolean }) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border-[1.5px] font-mono uppercase tracking-[0.1em] ${small ? "px-2 py-0.5 text-[0.6rem]" : "px-2.5 py-1 text-[0.65rem]"}`}
-      style={{ borderColor: m.hue, background: `color-mix(in srgb, ${m.hue} 12%, transparent)`, color: "var(--fg)" }}
+      // solid tint + fixed ink text: legible on paper, night and the volt hover state
+      style={{ borderColor: m.hue, background: `color-mix(in srgb, ${m.hue} 16%, #ffffff)`, color: "#04050d" }}
     >
-      <span style={{ color: m.hue }}>{m.glyph}</span>
+      <span style={{ color: `color-mix(in srgb, ${m.hue} 80%, #04050d)` }}>{m.glyph}</span>
       {c}
     </span>
   );
@@ -104,7 +105,7 @@ export function PerksClient({ perks, logos }: { perks: Perk[]; logos: LogoMap })
               </>
             ) : (
               <>
-                <button className="btn bg-white text-volt-700 hover:bg-volt-100" onClick={() => { setAuthOpen(true); track("signup_started", { source: "perks", trigger: "hero" }); }}>
+                <button className="btn btn-signal" onClick={() => { setAuthOpen(true); track("signup_started", { source: "perks", trigger: "hero" }); }}>
                   Unlock all perks <Arrow />
                 </button>
                 <span className="eyebrow text-volt-100">Free · 30 seconds · Google, Microsoft or work email</span>
