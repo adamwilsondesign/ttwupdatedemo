@@ -8,6 +8,7 @@ import type { LogoMap } from "@/lib/logos";
 import { track } from "@/lib/analytics";
 import { AuthModal, type Member } from "./AuthModal";
 import { RedeemModal } from "./RedeemModal";
+import { CountUp } from "@/components/home/CountUp";
 
 const STORE = "ttw-perks-member";
 type Audience = "All" | "Hosts" | "Attendees";
@@ -117,14 +118,14 @@ export function PerksClient({ perks, logos }: { perks: Perk[]; logos: LogoMap })
 
           {/* stats row — its bottom edge is the carousel's top rule */}
           <dl className="grid grid-cols-3 border-t-[1.5px] border-white/40 text-white">
-            {[
-              [String(perks.length), "Active offers"],
-              [`${money(totalValue)}+`, "Combined value"],
-              [String(partnerCount), "Partners"],
-            ].map(([v, l], i) => (
+            {([
+              [perks.length, "Active offers", "", ""],
+              [totalValue, "Combined value", "$", "+"],
+              [partnerCount, "Partners", "", ""],
+            ] as [number, string, string, string][]).map(([v, l, pre, suf], i) => (
               <div key={l} className={`px-5 py-7 md:px-10 ${i ? "border-l-[1.5px] border-white/40" : ""}`}>
                 <dt className="eyebrow text-volt-100">{l}</dt>
-                <dd className="display mt-3 text-[clamp(1.8rem,4.6vw,4.4rem)]">{v}</dd>
+                <dd className="display mt-3 text-[clamp(1.8rem,4.6vw,4.4rem)]"><CountUp value={v} prefix={pre} suffix={suf} /></dd>
               </div>
             ))}
           </dl>

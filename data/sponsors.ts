@@ -1,17 +1,17 @@
-export type Org = { name: string; slug: string; role?: string; url?: string; tba?: boolean };
+export type Org = { name: string; slug: string; role?: string; url?: string; tba?: boolean; square?: boolean };
 
 export const presenting: Org[] = [
   { name: "City of Toronto", slug: "city-of-toronto", url: "https://www.toronto.ca" },
   { name: "Shopify", slug: "shopify", url: "https://www.shopify.com" },
   { name: "Float", slug: "float", url: "https://floatfinancial.com" },
-  { name: "Presenting Partner", slug: "tba", tba: true },
+  { name: "Google", slug: "google", url: "https://about.google" },
 ];
 
 // DEMO: Signature tier is illustrative until the 2027 lineup is confirmed.
 export const signature: Org[] = [
   { name: "Wealthsimple", slug: "wealthsimple" },
   { name: "Cohere", slug: "cohere" },
-  { name: "RBC", slug: "rbc" },
+  { name: "RBC", slug: "rbc", square: true },
   { name: "Clio", slug: "clio" },
 ];
 

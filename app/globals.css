@@ -214,7 +214,7 @@ body {
 
 .marquee { display: flex; width: max-content; animation: marquee-l var(--dur, 60s) linear infinite; }
 .marquee.rev { animation-name: marquee-r; }
-.marquee-wrap:hover .marquee, .marquee-wrap:hover [data-anim] { animation-play-state: paused; }
+.marquee-wrap:hover [data-anim] { animation-play-state: paused; } /* logo marquees never pause */
 .mask-x { mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
 .mask-y { mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent); }
 
@@ -244,23 +244,16 @@ body {
   border-inline: 1.5px solid var(--color-signal);
   box-shadow: 0 0 18px 0 rgba(212, 255, 58, 0.45);
 }
-.station {
-  position: absolute; width: 22px; height: 22px; border-radius: 999px;
-  left: calc(-1 * (var(--pad) + var(--gutter) / 2) - 11px);
-  top: 50%; transform: translateY(-50%);
-  background: var(--bg); border: 1.5px solid var(--fg);
-  display: grid; place-items: center;
-  transition: background-color 600ms var(--ease-out-expo), box-shadow 600ms, transform 600ms var(--ease-out-expo);
-}
-.station::after { content: ""; width: 6px; height: 6px; border-radius: 999px; background: var(--fg); }
+/* Station marker: a single rule from the eyebrow back to the rail's outer
+   edge (it stops at the track, never crosses it). Lights up Signal once the
+   tram has passed. */
 .station-arm {
-  position: absolute; height: 1.5px; background: var(--fg);
-  left: calc(-1 * var(--pad) - var(--gutter) / 2 + 11px);
-  width: calc(var(--pad) + var(--gutter) / 2 - 11px - 10px);
-  top: 50%;
+  position: absolute; height: 1.5px; top: 50%; background: var(--fg);
+  left: calc(-1 * (var(--pad) + var(--gutter) / 2) + 7.5px);
+  width: calc(var(--pad) + var(--gutter) / 2 - 7.5px - 10px);
+  transition: background-color 600ms var(--ease-out-expo), box-shadow 600ms;
 }
-.station.lit { background: var(--color-signal); box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-signal) 25%, transparent), 0 0 30px 4px rgba(212, 255, 58, 0.5); transform: translateY(-50%) scale(1.1); }
-.station.lit::after { background: #04050d; }
+.station-arm.lit { background: var(--color-signal); box-shadow: 0 0 12px rgba(212, 255, 58, 0.6); }
 
 /* ───────────────────────── Preloader ───────────────────────── */
 html:not([data-preload]) .preloader { display: none; }

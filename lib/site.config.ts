@@ -13,6 +13,7 @@ export const site = {
     beehiivSubscribe: "https://torontotechweek.beehiiv.com/subscribe", // TODO: beehiiv embed/API endpoint
     sponsorship: "mailto:partners@torontotechweek.com",
     homecoming: "https://www.youtube.com/@torontotechweek",
+    homecomingVideoId: "", // TODO: YouTube ID of the Homecoming 2026 recap — enables the inline player
   },
   social: {
     x: "https://x.com/TOtechweek",

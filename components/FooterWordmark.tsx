@@ -22,7 +22,7 @@ export function FooterWordmark() {
       const natural = t.scrollWidth;
       size = Math.floor((100 * w.clientWidth * 0.985) / natural);
       t.style.fontSize = `${size}px`;
-      w.style.height = `${size * 0.6}px`; // show the top ~60% — the rest bleeds off the page
+      w.style.height = `${size * 0.68}px`; // shows ~three quarters of the letters; the rest bleeds off the page
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -55,7 +55,7 @@ export function FooterWordmark() {
         const mid = r.left + r.width / 2;
         const target = cx === null ? 0 : Math.exp(-Math.pow((mid - cx) / (size * 0.75), 2));
         lift[i] += (target - lift[i]) * Math.min(1, dt * 9);
-        const y = (1 - lift[i]) * size * 0.2;
+        const y = (1 - lift[i]) * size * 0.08;
         el.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
         el.style.setProperty("--lit", lift[i].toFixed(3));
       });

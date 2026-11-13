@@ -1,7 +1,7 @@
 // PLACEHOLDER lineup for the pre-conference homepage. Replace with the real
 // speaker and event data (Airtable / Luma) once announced. Names and companies
-// below are fictional.
-export type Speaker = { name: string; title: string; company: string; topic: string };
+// below are fictional; headshots are stock placeholders.
+export type Speaker = { name: string; title: string; company: string; topic: string; photo: string };
 export type TTWEvent = {
   id: string; day: number; time: string; title: string; host: string;
   venue: string; area: string; tag: "Flagship" | "Panel" | "Social" | "Workshop" | "Demo Day" | "Hackathon" | "Dinner";
@@ -17,14 +17,16 @@ export const days = [
 ];
 
 export const speakers: Speaker[] = [
-  { name: "Amara Okonkwo", title: "Founder & CEO", company: "Northwind AI", topic: "Building frontier AI from Canada" },
-  { name: "Daniel Reyes", title: "General Partner", company: "Lakeshore Ventures", topic: "The next decade of Canadian venture" },
-  { name: "Mei Tanaka", title: "VP Engineering", company: "Harbourfront Labs", topic: "Scaling eng teams 10 → 500" },
-  { name: "Liam O'Connor", title: "Co-founder", company: "Parcel Robotics", topic: "Hardware is hard (and worth it)" },
-  { name: "Priya Shah", title: "Chief Product Officer", company: "Maplestack", topic: "Product taste in the age of agents" },
-  { name: "Jonah Feld", title: "Head of Platform", company: "Union Pay Co.", topic: "Fintech infrastructure at scale" },
-  { name: "Sofia Alvarez", title: "Founder", company: "Kindred Health", topic: "Healthtech that clinicians love" },
-  { name: "Kwame Mensah", title: "Director of AI Research", company: "Vector Lab", topic: "Open research, real products" },
+  { name: "Amara Okonkwo", title: "Founder & CEO", company: "Northwind AI", topic: "Building frontier AI from Canada", photo: "/people/p32.jpg" },
+  { name: "Daniel Reyes", title: "General Partner", company: "Lakeshore Ventures", topic: "The next decade of Canadian venture", photo: "/people/p12.jpg" },
+  { name: "Mei Tanaka", title: "VP Engineering", company: "Harbourfront Labs", topic: "Scaling eng teams 10 → 500", photo: "/people/p5.jpg" },
+  { name: "Liam O'Connor", title: "Co-founder", company: "Parcel Robotics", topic: "Hardware is hard (and worth it)", photo: "/people/p56.jpg" },
+  { name: "Priya Shah", title: "Chief Product Officer", company: "Maplestack", topic: "Product taste in the age of agents", photo: "/people/p47.jpg" },
+  { name: "Jonah Feld", title: "Head of Platform", company: "Union Pay Co.", topic: "Fintech infrastructure at scale", photo: "/people/p68.jpg" },
+  { name: "Sofia Alvarez", title: "Founder", company: "Kindred Health", topic: "Healthtech that clinicians love", photo: "/people/p26.jpg" },
+  { name: "Kwame Mensah", title: "Director of AI Research", company: "Vector Lab", topic: "Open research, real products", photo: "/people/p64.jpg" },
+  { name: "Hannah Lindqvist", title: "Partner", company: "Northbound Capital", topic: "What investors want in 2027", photo: "/people/p44.jpg" },
+  { name: "Marcus Bell", title: "Founder & CEO", company: "Gridline Energy", topic: "Climate tech, Canadian scale", photo: "/people/p57.jpg" },
 ];
 
 export const events: TTWEvent[] = [

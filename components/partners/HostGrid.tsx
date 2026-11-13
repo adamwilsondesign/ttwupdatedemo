@@ -27,14 +27,19 @@ export function HostGrid({ hosts, logos }: { hosts: HostRecord[]; logos: LogoMap
   const present = new Set(groups.map(([k]) => k));
   const count = groups.reduce((s, [, l]) => s + l.length, 0);
 
-  // highlight the letter group currently in view
+  // highlight the letter group currently in view: the last letter tile that
+  // has crossed 40% of the viewport, defaulting to the first group (#, then A)
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-letter]"));
-    const io = new IntersectionObserver((es) => {
-      for (const e of es) if (e.isIntersecting) setActive((e.target as HTMLElement).dataset.letter!);
-    }, { rootMargin: "-30% 0px -60% 0px" });
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    const update = () => {
+      const tiles = Array.from(document.querySelectorAll<HTMLElement>("[data-letter]"));
+      if (!tiles.length) return;
+      let cur = tiles[0].dataset.letter!;
+      for (const t of tiles) if (t.getBoundingClientRect().top < window.innerHeight * 0.4) cur = t.dataset.letter!;
+      setActive(cur);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, [groups]);
 
   const jump = (l: string) => {

@@ -15,7 +15,7 @@ const faqs = [
 export function AboutFaq({ tone = "light", index = "06" }: { tone?: "dark" | "light"; index?: string }) {
   return (
     <Section tone={tone} id="faq">
-      <SectionHead index={index} eyebrow="About Toronto Tech Week" title="Toronto builds. It always has." />
+      <SectionHead index={index} eyebrow="About Toronto Tech Week" title={<>Toronto builds.<br />It always has.</>} />
       <div className="grid border-t-[1.5px] rule-strong lg:grid-cols-2">
         <div className="reveal space-y-5 px-[var(--pad)] py-10 font-mono text-[0.95rem] uppercase leading-relaxed tracking-[0.04em] text-[var(--muted)] md:py-14 lg:border-r-[1.5px] lg:rule">
           <p>This city produces remarkable talent and world-class companies. It is a place defined by creativity, resilience and momentum.</p>

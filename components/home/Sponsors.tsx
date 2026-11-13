@@ -14,7 +14,7 @@ function Tier({ label, orgs, logos, size, cols }: { label: string; orgs: Org[]; 
       <div className={`grid ${cols}`}>
         {orgs.map((o, i) => (
           <a key={o.slug + i} href={o.url ?? "#"} className={`group grid place-items-center px-6 transition-colors hover:bg-[var(--surface)] ${size} rule ${orgs.length === 4 ? `${i % 2 ? "border-l-[1.5px]" : ""} ${i === 2 ? "md:border-l-[1.5px]" : ""} ${i > 1 ? "border-t-[1.5px] md:border-t-0" : ""}` : i > 0 ? "border-l-[1.5px]" : ""}`}>
-            <Logo org={o} src={logos[o.slug]} className={o.tba ? "h-12 w-40" : "h-full max-h-[inherit]"} wordmarkClass="text-[1.6rem]" />
+            <Logo org={o} src={logos[o.slug]} className={o.tba ? "h-12 w-40" : o.square ? "h-full !max-h-[72px]" : "h-full max-h-[inherit]"} wordmarkClass="text-[1.6rem]" />
           </a>
         ))}
       </div>

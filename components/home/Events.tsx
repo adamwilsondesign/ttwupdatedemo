@@ -22,7 +22,7 @@ export function Events({ tone = "dark", index = "02" }: { tone?: "dark" | "light
       <div className="reveal grid border-t-[1.5px] rule-strong lg:grid-cols-[minmax(0,420px)_1fr]">
         <div className="relative overflow-hidden grad-plasma grain p-6 text-white md:p-10">
           <p className="eyebrow text-volt-100">Flagship · Fri Jun 4 · 7:00 PM</p>
-          <p className="display mt-6 text-[clamp(3rem,5vw,4.6rem)]">Homecoming</p>
+          <p className="display mt-6 pb-2 text-[clamp(2.4rem,3.6vw,3.5rem)] leading-[0.95]">Homecoming</p>
           <p className="eyebrow mt-3 text-signal">History · Leslieville</p>
           <svg viewBox="0 0 300 70" className="mt-8 w-full" aria-hidden>
             <line x1="0" y1="62" x2="300" y2="62" stroke="#eef1ff" strokeWidth="2" />

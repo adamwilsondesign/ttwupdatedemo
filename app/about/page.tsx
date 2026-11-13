@@ -7,13 +7,13 @@ import { RailTrack } from "@/components/RailTrack";
 export const metadata: Metadata = { title: "About · Toronto Tech Week" };
 
 const team = [
-  ["Julia (Baird) Konefal", "Co-director · Head of Platform & Operations, Golden Ventures"],
-  ["Mellonie Truong", "Co-director · Founder, Toronto Tech Fest & Sage Consulting Co"],
-  ["Ameet Shah", "General Partner, Golden Ventures"],
-  ["Satish Kanwar", "Co-Founder, Good Future"],
-  ["Siri Agrell", "Founding Member"],
-  ["Taha Hossain", "Founding Member"],
-  ["Rachel MacPhail", "Director of Operations & Partnerships"],
+  ["Julia (Baird) Konefal", "Co-director · Head of Platform & Operations, Golden Ventures", "julia"],
+  ["Mellonie Truong", "Co-director · Founder, Toronto Tech Fest & Sage Consulting Co", "mell"],
+  ["Ameet Shah", "General Partner, Golden Ventures", "ameet"],
+  ["Satish Kanwar", "Co-Founder, Good Future", "satish"],
+  ["Siri Agrell", "Founding Member", "siri"],
+  ["Taha Hossain", "Founding Member", "taha"],
+  ["Rachel MacPhail", "Director of Operations & Partnerships", "rachel"],
 ];
 
 export default function AboutPage() {
@@ -34,17 +34,25 @@ export default function AboutPage() {
       </Section>
       <Section tone="light">
         <SectionHead index="02" eyebrow="Founding members & team" title="The people behind the week." />
-        <ul className="grid border-t-[1.5px] rule sm:grid-cols-2 lg:grid-cols-4">
-          {team.map(([n, r], i) => (
-            <li key={n} className="flex min-h-[180px] flex-col justify-between border-b-[1.5px] border-r-[1.5px] rule p-6 md:p-8">
-              <span className="eyebrow text-[var(--muted)]">{String(i + 1).padStart(2, "0")}</span>
-              <div><p className="text-2xl font-medium tracking-[-0.03em]">{n}</p><p className="mt-2 text-sm text-[var(--muted)]">{r}</p></div>
+        <ul className="grid grid-cols-2 gap-[1.5px] border-y-[1.5px] rule bg-[var(--line)] lg:grid-cols-4">
+          {team.map(([n, r, img]) => (
+            <li key={n} className="group bg-[var(--bg)] p-3 md:p-4">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-xl border-[1.5px] rule-strong bg-volt-900">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/team/${img}.jpg`} alt={n} loading="lazy" className="absolute inset-0 h-full w-full object-cover grayscale transition-[filter,transform] duration-700 group-hover:scale-[1.04] group-hover:grayscale-0" />
+              </div>
+              <div className="px-1 pt-4 pb-2">
+                <p className="text-[1.25rem] font-medium leading-tight tracking-[-0.03em]">{n}</p>
+                <p className="mt-1 text-sm text-[var(--muted)]">{r}</p>
+              </div>
             </li>
           ))}
+          {/* close the grid cleanly (7 people → one empty tile) */}
+          <li aria-hidden className="bg-[var(--bg)]" />
         </ul>
         <div className="h-16" />
       </Section>
-      <Impact index="03" />
+      <Impact tone="dark" index="03" />
       </RailTrack>
     </>
   );

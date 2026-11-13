@@ -15,10 +15,10 @@ export function Footer() {
         <span className="cross -right-[9px] -top-[9px]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[70%] bg-[radial-gradient(60%_80%_at_50%_100%,rgba(46,70,255,0.55),transparent_70%)]" />
 
-        <div className="relative grid gap-12 px-5 pt-20 pb-16 md:px-10 lg:grid-cols-[1.2fr_1fr]">
+        <div className="relative grid gap-10 px-5 pt-16 pb-12 md:px-10 lg:grid-cols-[1.2fr_1fr]">
           <div>
             <p className="eyebrow mb-6 text-[var(--muted)]">Stay in the loop</p>
-            <h2 className="h-section max-w-[16ch]">Toronto is open. <span className="text-volt-grad">Join a week of ideas, connections and possibility.</span></h2>
+            <h2 className="max-w-[22ch] text-[clamp(2rem,3.4vw,3.3rem)] font-semibold leading-[1] tracking-[-0.04em] [-webkit-text-stroke:0.01em_currentColor]">Toronto is open. <span className="text-volt-grad">Join a week of ideas, connections and possibility.</span></h2>
           </div>
           <form
             className="min-w-0 self-end"

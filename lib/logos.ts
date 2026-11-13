@@ -17,7 +17,7 @@ function readManifest(rel: string): LogoMap {
  *  3. logos/hosts-extra/manifest.json — gap-fill for hosts with no logo on the live site */
 export function getLogoMap(): LogoMap {
   const out: LogoMap = {};
-  const skip = new Set(["rbc", "td", "intercom", "ycombinator", "databricks"]); // icon-only marks read poorly at tile size
+  const skip = new Set(["td", "intercom", "ycombinator", "databricks"]); // icon-only marks read poorly at tile size
   for (const rel of ["manifest.json", "hosts/manifest.json", "hosts-extra/manifest.json"]) {
     for (const [slug, file] of Object.entries(readManifest(rel))) {
       if (out[slug] || (rel === "manifest.json" && skip.has(slug))) continue;
